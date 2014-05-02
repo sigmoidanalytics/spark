@@ -43,7 +43,7 @@ private[spark] object UIUtils {
       case _ => <li><a href={prependBaseUri("/storage")}>Storage</a></li>
     }
     val environment = page match {
-      case Environment => 
+      case Environment =>
         <li class="active"><a href={prependBaseUri("/environment")}>Environment</a></li>
       case _ => <li><a href={prependBaseUri("/environment")}>Environment</a></li>
     }
@@ -63,7 +63,7 @@ private[spark] object UIUtils {
       <body>
         <div class="navbar navbar-static-top">
           <div class="navbar-inner">
-            <a href={prependBaseUri("/")} class="brand"><img src={prependBaseUri("/static/spark-logo-77x50px-hd.png")}  /></a>
+            <a href={prependBaseUri("/")} class="brand"><img src={prependBaseUri("/static/sigmoid-logo.png")} style="margin-top: 2px;" /></a>
             <ul class="nav">
               {jobs}
               {storage}
@@ -103,7 +103,7 @@ private[spark] object UIUtils {
           <div class="row-fluid">
             <div class="span12">
               <h3 style="vertical-align: middle; display: inline-block;">
-                <img src={prependBaseUri("/static/spark-logo-77x50px-hd.png")} style="margin-right: 15px;" />
+                <img src={prependBaseUri("/static/sigmoid-logo.png")} style="margin-right: 15px;" />
                 {title}
               </h3>
             </div>
