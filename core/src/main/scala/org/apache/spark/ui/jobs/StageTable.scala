@@ -43,6 +43,7 @@ private[spark] class StageTable(val stages: Seq[StageInfo], val parent: JobProgr
   private def stageTable[T](makeRow: T => Seq[Node], rows: Seq[T]): Seq[Node] = {
     <table class="table table-bordered table-striped table-condensed sortable">
       <thead>
+        <th>Job Id</th>
         <th>Stage Id</th>
         {if (isFairScheduler) {<th>Pool Name</th>} else {}}
         <th>Description</th>
@@ -110,6 +111,7 @@ private[spark] class StageTable(val stages: Seq[StageInfo], val parent: JobProgr
     }
 
     <tr>
+      <td>{s.jobId}</td>
       <td>{s.stageId}</td>
       {if (isFairScheduler) {
         <td><a href={"%s/stages/pool?poolname=%s".format(UIUtils.prependBaseUri(),poolName.get)}>
