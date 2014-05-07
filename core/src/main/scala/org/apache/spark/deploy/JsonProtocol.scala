@@ -22,6 +22,8 @@ import net.liftweb.json.JsonDSL._
 import org.apache.spark.deploy.DeployMessages.{MasterStateResponse, WorkerStateResponse}
 import org.apache.spark.deploy.master.{ApplicationInfo, WorkerInfo}
 import org.apache.spark.deploy.worker.ExecutorRunner
+import org.apache.spark.scheduler.{SchedulingMode, StageInfo, TaskInfo}
+import org.apache.spark.ui.jobs.{StageTable}
 
 
 private[spark] object JsonProtocol {
@@ -48,6 +50,17 @@ private[spark] object JsonProtocol {
     ("submitdate" -> obj.submitDate.toString) ~
     ("state" -> obj.state.toString) ~
     ("duration" -> obj.duration)
+  }
+
+  def writeStageInfo(obj: StageInfo) = {
+    ("jobid" -> obj.jobId) ~
+    ("stageid" -> obj.stageId) ~
+    ("submissiontime" -> obj.submissionTime)
+  }
+
+  def writeStagesInfo(obj: Seq[StageInfo]) = {
+    ("info" -> "stages info") ~
+    ("stages" -> obj.toList.map(writeStageInfo))
   }
 
   def writeApplicationDescription(obj: ApplicationDescription) = {

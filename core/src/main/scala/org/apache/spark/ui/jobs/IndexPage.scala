@@ -18,17 +18,44 @@
 package org.apache.spark.ui.jobs
 
 import javax.servlet.http.HttpServletRequest
+import net.liftweb.json.JsonAST.JValue
 
 import scala.xml.{NodeSeq, Node}
 
+import org.apache.spark.deploy.JsonProtocol
+import org.apache.spark.Logging
 import org.apache.spark.scheduler.SchedulingMode
 import org.apache.spark.ui.Page._
 import org.apache.spark.ui.UIUtils._
 
 
 /** Page showing list of all ongoing and recently finished stages and pools*/
-private[spark] class IndexPage(parent: JobProgressUI) {
+private[spark] class IndexPage(parent: JobProgressUI) extends Logging {
   def listener = parent.listener
+
+  /** Executor details for a particular application */
+  def renderJson(request: HttpServletRequest): JValue = {
+    listener.synchronized {
+      val activeStages = listener.activeStages.toSeq
+      val completedStages = listener.completedStages.reverse.toSeq
+      val failedStages = listener.failedStages.reverse.toSeq
+      val now = System.currentTimeMillis()
+
+      var activeTime = 0L
+      for (tasks <- listener.stageIdToTasksActive.values; t <- tasks) {
+        activeTime += t.timeRunning(now)
+      }
+
+      val activeStagesTable = new StageTable(activeStages.sortBy(_.submissionTime).reverse, parent)
+      val completedStagesTable = new StageTable(completedStages.sortBy(_.submissionTime).reverse, parent)
+      val failedStagesTable = new StageTable(failedStages.sortBy(_.submissionTime).reverse, parent)
+
+      val pools = listener.sc.getAllPools
+      val poolTable = new PoolTable(pools, listener)
+
+      JsonProtocol.writeStagesInfo(completedStages.sortBy(_.submissionTime).reverse)
+    }
+  }
 
   def render(request: HttpServletRequest): Seq[Node] = {
     listener.synchronized {
@@ -48,6 +75,8 @@ private[spark] class IndexPage(parent: JobProgressUI) {
 
       val pools = listener.sc.getAllPools
       val poolTable = new PoolTable(pools, listener)
+      logInfo("activeStages : %s".format(activeStages))
+
       val summary: NodeSeq =
        <div>
          <ul class="unstyled">
