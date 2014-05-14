@@ -38,7 +38,14 @@ class StageInfo(
   var completionTime: Option[Long] = None
   val rddName = stage.rdd.name
   val name = stage.name
-  val numPartitions = stage.numPartitions
-  val numTasks = stage.numTasks
   var emittedTaskSizeWarning = false
+  var description: Option[String] = None
+  var numPartitions = stage.numPartitions
+  var numTasks = stage.numTasks
+  var startedTasks: Int = 0
+  var completedTasks: Int = 0
+  var failedTasks: String = ""
+  var poolName: Option[String] = None
+  var shuffleRead = ""
+  var shuffleWrite = ""
 }

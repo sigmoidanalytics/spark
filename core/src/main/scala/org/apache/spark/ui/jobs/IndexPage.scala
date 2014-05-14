@@ -49,11 +49,11 @@ private[spark] class IndexPage(parent: JobProgressUI) extends Logging {
       val activeStagesTable = new StageTable(activeStages.sortBy(_.submissionTime).reverse, parent)
       val completedStagesTable = new StageTable(completedStages.sortBy(_.submissionTime).reverse, parent)
       val failedStagesTable = new StageTable(failedStages.sortBy(_.submissionTime).reverse, parent)
-
       val pools = listener.sc.getAllPools
       val poolTable = new PoolTable(pools, listener)
+      val stagesInfo = Seq(activeStagesTable.toItemSeq, completedStagesTable.toItemSeq, failedStagesTable.toItemSeq)
 
-      JsonProtocol.writeStagesInfo(completedStages.sortBy(_.submissionTime).reverse)
+      JsonProtocol.writeStagesInfo(stagesInfo)
     }
   }
 
@@ -75,7 +75,6 @@ private[spark] class IndexPage(parent: JobProgressUI) extends Logging {
 
       val pools = listener.sc.getAllPools
       val poolTable = new PoolTable(pools, listener)
-      logInfo("activeStages : %s".format(activeStages))
 
       val summary: NodeSeq =
        <div>

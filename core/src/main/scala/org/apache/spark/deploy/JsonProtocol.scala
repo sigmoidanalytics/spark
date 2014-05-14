@@ -55,12 +55,23 @@ private[spark] object JsonProtocol {
   def writeStageInfo(obj: StageInfo) = {
     ("jobid" -> obj.jobId) ~
     ("stageid" -> obj.stageId) ~
-    ("submissiontime" -> obj.submissionTime)
+    ("name" -> obj.name) ~
+    ("description" -> obj.description) ~
+    ("startedTasks" -> obj.startedTasks) ~
+    ("completedTasks" -> obj.completedTasks) ~
+    ("failedTasks" -> obj.failedTasks) ~
+    ("numTasks" -> obj.numTasks) ~
+    ("poolName" -> obj.poolName) ~
+    ("submissiontime" -> obj.submissionTime.getOrElse(System.currentTimeMillis())) ~
+    ("completiontime" -> obj.completionTime.getOrElse(System.currentTimeMillis())) ~
+    ("shuffleRead" -> obj.shuffleRead) ~
+    ("shuffleWrite" -> obj.shuffleWrite)
   }
 
-  def writeStagesInfo(obj: Seq[StageInfo]) = {
-    ("info" -> "stages info") ~
-    ("stages" -> obj.toList.map(writeStageInfo))
+  def writeStagesInfo(obj: Seq[Seq[StageInfo]]) = {
+    ("activeStages" -> obj(0).toList.map(writeStageInfo)) ~
+    ("completedStages" -> obj(1).toList.map(writeStageInfo)) ~
+    ("failedStages" -> obj(2).toList.map(writeStageInfo))
   }
 
   def writeApplicationDescription(obj: ApplicationDescription) = {
