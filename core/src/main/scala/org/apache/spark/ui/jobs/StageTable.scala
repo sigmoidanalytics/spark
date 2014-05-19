@@ -56,6 +56,7 @@ private[spark] class StageTable(val stages: Seq[StageInfo], val parent: JobProgr
     }
     s.numTasks = s.numTasks
     s.poolName = listener.stageIdToPool.get(s.stageId)
+    s.numStages = listener.jobIdToTotalStages.getOrElse(s.jobId, 0)
 
     val shuffleReadSortable = listener.stageIdToShuffleRead.getOrElse(s.stageId, 0L)
     s.shuffleRead = shuffleReadSortable match {

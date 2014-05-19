@@ -65,7 +65,8 @@ private[spark] object JsonProtocol {
     ("submissiontime" -> obj.submissionTime.getOrElse(System.currentTimeMillis())) ~
     ("completiontime" -> obj.completionTime.getOrElse(System.currentTimeMillis())) ~
     ("shuffleRead" -> obj.shuffleRead) ~
-    ("shuffleWrite" -> obj.shuffleWrite)
+    ("shuffleWrite" -> obj.shuffleWrite) ~
+    ("numStages" -> obj.numStages)
   }
 
   def writeStagesInfo(obj: Seq[Seq[StageInfo]]) = {
