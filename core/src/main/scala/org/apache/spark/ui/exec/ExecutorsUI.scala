@@ -18,6 +18,7 @@
 package org.apache.spark.ui.exec
 
 import javax.servlet.http.HttpServletRequest
+import net.liftweb.json.JsonAST.JValue
 
 import scala.collection.mutable.{HashMap, HashSet}
 import scala.xml.Node
@@ -32,6 +33,7 @@ import org.apache.spark.ui.JettyUtils._
 import org.apache.spark.ui.Page.Executors
 import org.apache.spark.ui.UIUtils
 import org.apache.spark.util.Utils
+import org.apache.spark.deploy.JsonProtocol
 
 
 private[spark] class ExecutorsUI(val sc: SparkContext) {
@@ -45,8 +47,22 @@ private[spark] class ExecutorsUI(val sc: SparkContext) {
   }
 
   def getHandlers = Seq[(String, Handler)](
+    ("/executors/json", (request: HttpServletRequest) => renderJson(request)),
     ("/executors", (request: HttpServletRequest) => render(request))
   )
+
+  def renderJson(request: HttpServletRequest): JValue = {
+    val storageStatusList = sc.getExecutorStorageStatus
+
+    val maxMem = storageStatusList.map(_.maxMem).fold(0L)(_+_)
+    val memUsed = storageStatusList.map(_.memUsed()).fold(0L)(_+_)
+    val diskSpaceUsed = storageStatusList.flatMap(_.blocks.values.map(_.diskSize)).fold(0L)(_+_)
+
+    val execInfo = for (statusId <- 0 until storageStatusList.size) yield getExecInfo(statusId)
+
+    JsonProtocol.writeExecutorsInfo(Utils.bytesToString(memUsed), Utils.bytesToString(maxMem),
+                                  Utils.bytesToString(diskSpaceUsed), execInfo)
+  }
 
   def render(request: HttpServletRequest): Seq[Node] = {
     val storageStatusList = sc.getExecutorStorageStatus

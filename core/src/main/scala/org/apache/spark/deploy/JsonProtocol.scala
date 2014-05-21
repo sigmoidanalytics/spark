@@ -112,4 +112,28 @@ private[spark] object JsonProtocol {
     ("executors" -> obj.executors.toList.map(writeExecutorRunner)) ~
     ("finishedexecutors" -> obj.finishedExecutors.toList.map(writeExecutorRunner))
   }
+
+  def writeExecInfo(kv: Seq[String]) = {
+    ("execId" -> kv(0)) ~
+    ("hostPort" -> kv(1)) ~
+    ("rddBlocks" -> kv(2)) ~
+    ("memUsed" -> kv(3).toLong) ~
+    ("maxMem" -> kv(4).toLong) ~
+    ("diskUsed" -> kv(5).toLong) ~
+    ("activeTasks" -> kv(6)) ~
+    ("failedTasks" -> kv(7)) ~
+    ("completedTasks" -> kv(8)) ~
+    ("totalTasks" -> kv(9)) ~
+    ("totalDuration" -> kv(10).toLong) ~
+    ("totalShuffleRead" -> kv(11).toLong) ~
+    ("totalShuffleWrite" -> kv(12).toLong)
+  }
+
+  def writeExecutorsInfo(memUsed: String, maxMem: String, diskUsed: String,
+                             execInfo: Seq[Seq[String]]) = {
+    ("memUsed" -> memUsed) ~
+    ("maxMem" -> maxMem) ~
+    ("diskUsed" -> diskUsed) ~
+    ("execInfo" -> execInfo.toList.map(writeExecInfo))
+  }
 }

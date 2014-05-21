@@ -48,6 +48,7 @@ class StageInfo(
   var poolName: Option[String] = None
   var shuffleRead = ""
   var shuffleWrite = ""
+  val shuffleDep = stage.shuffleDep
   val parents = stage.parents
   var numStages: Int = 0
 }

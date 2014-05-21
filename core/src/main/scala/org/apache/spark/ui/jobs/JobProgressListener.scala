@@ -111,7 +111,7 @@ private[spark] class JobProgressListener(val sc: SparkContext) extends SparkList
     description.map(d => stageIdToDescription(stage.stageId) = d)
 
     var numStages = jobIdToTotalStages.getOrElseUpdate(stage.jobId, 0)
-    val totalStagesAsPerCurrentStage = stage.parents.size+1
+    val totalStagesAsPerCurrentStage = stage.parents.size + stage.shuffleDep.size + 1
     if (numStages < totalStagesAsPerCurrentStage) { // Check for stage having highest parents and update the same
       numStages = totalStagesAsPerCurrentStage
     }
