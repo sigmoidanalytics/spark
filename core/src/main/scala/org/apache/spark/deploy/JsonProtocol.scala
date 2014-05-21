@@ -23,7 +23,9 @@ import org.apache.spark.deploy.DeployMessages.{MasterStateResponse, WorkerStateR
 import org.apache.spark.deploy.master.{ApplicationInfo, WorkerInfo}
 import org.apache.spark.deploy.worker.ExecutorRunner
 import org.apache.spark.scheduler.{SchedulingMode, StageInfo, TaskInfo}
+import org.apache.spark.storage.RDDInfo
 import org.apache.spark.ui.jobs.{StageTable}
+import org.apache.spark.util.Utils
 
 
 private[spark] object JsonProtocol {
@@ -135,5 +137,19 @@ private[spark] object JsonProtocol {
     ("maxMem" -> maxMem) ~
     ("diskUsed" -> diskUsed) ~
     ("execInfo" -> execInfo.toList.map(writeExecInfo))
+  }
+
+  def writeRDDInfo(rdd: RDDInfo) = {
+    ("name" -> rdd.name) ~
+    ("storageLevel" -> rdd.storageLevel.description) ~
+    ("numCachedPartitions" -> rdd.numCachedPartitions) ~
+    ("numPartitions" -> rdd.numPartitions) ~
+    ("memSize" -> Utils.bytesToString(rdd.memSize)) ~
+    ("diskSize" -> Utils.bytesToString(rdd.diskSize))
+  }
+
+  def writeStorageInfo(storageInfo: Seq[RDDInfo]) = {
+    ("storageInfo" -> storageInfo.toList.map(writeRDDInfo)) ~
+    ("meta" -> "Storage Info")
   }
 }
