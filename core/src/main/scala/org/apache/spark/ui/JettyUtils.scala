@@ -60,6 +60,7 @@ private[spark] object JettyUtils extends Logging {
         baseRequest.setHandled(true)
         val result = responder(request)
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
+        response.addHeader("Access-Control-Allow-Origin","*")
         response.getWriter().println(extractFn(result))
       }
     }
@@ -74,6 +75,7 @@ private[spark] object JettyUtils extends Logging {
                  response: HttpServletResponse) {
         response.setStatus(302)
         response.setHeader("Location", baseRequest.getRootURL + newPath)
+        response.addHeader("Access-Control-Allow-Origin","*")
         baseRequest.setHandled(true)
       }
     }
